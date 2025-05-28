@@ -1,0 +1,60 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath, amssymb}
+
+\title{Compte-rendu -- Question 1}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Question 1 -- Lecture de l'instance et ajustement des constantes}
+
+L’instance est lue à partir d’un fichier texte structuré contenant les informations suivantes :
+\begin{itemize}
+    \item le nombre de périodes $T$ ;
+    \item la demande $d_i$ pour chaque période $i \in \{1, \dots, T\}$ ;
+    \item le coût de production unitaire $c_i$ pour chaque période $i$ ;
+    \item le coût fixe de production $f_i$ pour chaque période $i$ ;
+    \item le coût de stockage unitaire $h$ (identique pour toutes les périodes).
+\end{itemize}
+
+Ces données sont extraites ligne par ligne dans le code Python. Les listes \texttt{demandes}, \texttt{couts}, \texttt{cfixes} et la variable \texttt{cstock} correspondent respectivement à $d_i$, $c_i$, $f_i$ et $h$.
+
+\medskip
+
+La constante $M$ joue un rôle crucial dans le modèle mathématique. Elle est utilisée dans la contrainte de liaison entre la production $x_i$ et la décision de production $y_i$ :
+\[
+x_i \leq M \cdot y_i, \quad \forall i \in \{1, \dots, T\}
+\]
+Cette contrainte assure que si aucune production n’a lieu ($y_i = 0$), alors $x_i = 0$.
+
+\medskip
+
+Dans le code fourni, $M$ est initialisé comme suit :
+\[
+M = \sum_{i=1}^{T} d_i
+\]
+Cette valeur garantit que $x_i$ peut atteindre la demande totale, ce qui est valide mais excessif. En effet, la production maximale nécessaire à une période donnée ne dépassera jamais la demande maximale (éventuellement augmentée d’un stock).
+
+\medskip
+
+\textbf{Proposition d’ajustement :} une meilleure valeur pour $M$ est :
+\[
+M = \max_{i} d_i
+\]
+Cette valeur reste correcte car elle permet de produire toute la demande d’une période lorsque $y_i = 1$, tout en réduisant le relâchement de la contrainte. Cela peut améliorer l’efficacité du solveur (temps de résolution plus court) et éviter certains problèmes numériques.
+
+\medskip
+
+\textbf{Remarque :} si l’on veut autoriser la production pour couvrir également du stock, on peut légèrement majorer $M$ avec la demande maximale augmentée d’un facteur de sécurité :
+\[
+M = \max_i d_i + \delta
+\quad \text{avec } \delta \in \mathbb{R}_+
+\]
+
+\end{document}
